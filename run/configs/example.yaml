@@ -37,4 +37,4 @@ gnn:
 optim:
   optimizer: adam
   base_lr: 0.01
-  max_epoch: 400
+  max_epoch: 200

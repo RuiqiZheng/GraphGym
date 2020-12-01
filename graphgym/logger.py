@@ -99,6 +99,11 @@ class Logger(object):
         pred_int = self._get_pred_int(pred_score)
         return {'accuracy': round(accuracy_score(true, pred_int), cfg.round)}
 
+    def classification_multi_accuracy(self):
+        true, pred_score = torch.cat(self._true), torch.cat(self._pred)
+        pred_int = self._get_pred_int(pred_score)
+        return {'accuracy': round(accuracy_score(true, pred_int), cfg.round)}, accuracy_score(true, pred_int)
+
     def regression(self):
         true, pred = torch.cat(self._true), torch.cat(self._pred)
         return {'mae': float(round(mean_absolute_error(true, pred), cfg.round)),
@@ -169,6 +174,37 @@ class Logger(object):
         if cfg.tensorboard_each_run:
             dict_to_tb(stats, self.tb_writer, cur_epoch)
         self.reset()
+
+    def write_epoch_return(self, cur_epoch):
+        basic_stats = self.basic()
+
+        if self.task_type == 'regression':
+            task_stats = self.regression()
+        elif self.task_type == 'classification_binary':
+            task_stats = self.classification_binary()
+        elif self.task_type == 'classification_multi':
+            task_stats, val_accuracy = self.classification_multi_accuracy()
+        else:
+            raise ValueError('Task has to be regression or classification')
+
+        epoch_stats = {'epoch': cur_epoch}
+        eta_stats = {'eta': round(self.eta(cur_epoch), cfg.round)}
+
+        if self.name == 'train':
+            stats = {**epoch_stats, **eta_stats, **basic_stats, **task_stats}
+        else:
+            stats = {**epoch_stats, **basic_stats, **task_stats}
+
+
+        # print
+        logging.info('{}: {}'.format(self.name, stats))
+        # json
+        dict_to_json(stats, '{}/stats.json'.format(self.out_dir))
+        # tensorboard
+        if cfg.tensorboard_each_run:
+            dict_to_tb(stats, self.tb_writer, cur_epoch)
+        self.reset()
+        return val_accuracy
 
     def close(self):
         if cfg.tensorboard_each_run:

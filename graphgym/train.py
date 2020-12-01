@@ -45,6 +45,7 @@ def eval_epoch(logger, loader, model):
 
 
 def train(loggers, loaders, model, optimizer, scheduler):
+    best_val_accuracy = 0
     start_epoch = 0
     if cfg.train.auto_resume:
         start_epoch = load_ckpt(model, optimizer, scheduler)
@@ -60,7 +61,10 @@ def train(loggers, loaders, model, optimizer, scheduler):
         if is_eval_epoch(cur_epoch):
             for i in range(1, num_splits):
                 eval_epoch(loggers[i], loaders[i], model)
-                loggers[i].write_epoch(cur_epoch)
+
+                current_accuracy = loggers[i].write_epoch_return(cur_epoch)
+                if current_accuracy > best_val_accuracy:
+                    best_val_accuracy = current_accuracy
         if is_ckpt_epoch(cur_epoch):
             save_ckpt(model, optimizer, scheduler, cur_epoch)
     for logger in loggers:
@@ -69,3 +73,5 @@ def train(loggers, loaders, model, optimizer, scheduler):
         clean_ckpt()
 
     logging.info('Task done, results saved in {}'.format(cfg.out_dir))
+    print("best_val_accuracy", best_val_accuracy)
+    return best_val_accuracy

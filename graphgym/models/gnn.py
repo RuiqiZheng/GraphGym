@@ -20,6 +20,10 @@ def GNNLayer(dim_in, dim_out, has_act=True):
     return GeneralLayer(cfg.gnn.layer_type, dim_in, dim_out, has_act)
 
 
+# d_in equals the number of node features
+# dim_inner is 256 determined by example.yaml
+# dim_out is 256
+# final_act=True
 def GNNPreMP(dim_in, dim_out):
     return GeneralMultiLayer('linear', cfg.gnn.layers_pre_mp,
                              dim_in, dim_out, dim_inner=dim_out, final_act=True)
@@ -152,6 +156,8 @@ class GNN(nn.Module):
         self.preprocess = Preprocess(dim_in)
         d_in = self.preprocess.dim_out
         if cfg.gnn.layers_pre_mp > 0:
+            # d_in equals the number of node features
+            # dim_inner is 256 determined by example.yaml
             self.pre_mp = GNNPreMP(d_in, cfg.gnn.dim_inner)
             d_in = cfg.gnn.dim_inner
         if cfg.gnn.layers_mp > 1:

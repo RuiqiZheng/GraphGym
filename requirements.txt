@@ -1,7 +1,7 @@
 yacs
 tensorboardx
 torch
-torch-scatter
+
 torch-geometric
 deepsnap
 ogb
@@ -12,3 +12,4 @@ scikit-learn
 matplotlib
 seaborn
 notebook
+torch-scatter

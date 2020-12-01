@@ -50,6 +50,11 @@ class GeneralLayer(nn.Module):
 class GeneralMultiLayer(nn.Module):
     '''General wrapper for stack of layers'''
 
+    # d_in equals the number of node features
+    # dim_inner is 256 determined by example.yaml
+    # dim_out is 256
+    # final_act=True
+    # num_layers = 1
     def __init__(self, name, num_layers, dim_in, dim_out, dim_inner=None,
                  final_act=True, **kwargs):
         super(GeneralMultiLayer, self).__init__()
