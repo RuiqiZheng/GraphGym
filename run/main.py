@@ -20,8 +20,9 @@ from graphgym.contrib.train import *
 from graphgym.register import train_dict
 
 
-def train_one_solution(dataset='Cora', layers_mp=8,layers_pre_mp=1,layers_post_mp=1,layer_type = 'generalconv',
-                       stage_type='stack', batchnorm ='True', act ='prelu', dropout = 0.6, agg = 'add'):
+def train_one_solution(dataset='Cora', dim_inner=256, layers_mp=8, layers_pre_mp=1, layers_post_mp=1,
+                       layer_type='generalconv', stage_type='stack', batchnorm='True', act='prelu', dropout=0.6,
+                       agg='add', device='auto'):
     # Load cmd line args
     # args = parse_args()
     # Repeat for different random seeds
@@ -45,6 +46,8 @@ def train_one_solution(dataset='Cora', layers_mp=8,layers_pre_mp=1,layers_post_m
     cfg.gnn.dropout = dropout
     cfg.gnn.agg = agg
     cfg.gnn.layers_post_mp = layers_post_mp
+    cfg.device = device
+    cfg.gnn.dim_inner = dim_inner
 
     random.seed(cfg.seed)
     np.random.seed(cfg.seed)
@@ -80,4 +83,4 @@ def train_one_solution(dataset='Cora', layers_mp=8,layers_pre_mp=1,layers_post_m
 
 
 if __name__ == '__main__':
-    train_one_solution('Cora',2)
+    train_one_solution('Cora', dim_inner=256, layers_mp=2)
